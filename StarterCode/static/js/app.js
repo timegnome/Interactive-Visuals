@@ -1,5 +1,5 @@
 function optionChanged(value){
-    d3.json("samples.json").then((incomingData) => {
+    d3.json("data/samples.json").then((incomingData) => {
         var info = d3.select("#sample-metadata");
         var otus =incomingData["samples"].filter(d => d.id === value)[0]['otu_ids']
 
@@ -62,7 +62,7 @@ function optionChanged(value){
     });
 }
 function init() {
-    d3.json("samples.json").then((incomingData) => {
+    d3.json("data/samples.json").then((incomingData) => {
         var dropdownMenu = d3.select("#selDataset");
         incomingData['names'].forEach(d=> dropdownMenu.append('option').text(d))
         var info = d3.select("#sample-metadata");
