@@ -83,14 +83,8 @@ function init() {
         <strong>Location: ${metadata['location']}</strong><br>
         <strong>Bbtype: ${metadata['bbtype']}</strong><br>
         <strong>Wfreq: ${metadata['wfreq']}</strong><br>`)
-        //  forEach(d => {info.append('p').text(d); console.log(d);})
+        // console.log(values.slice(0,10).map(d => d.toString()))
         //  Create your trace.
-        var traceBar = [{
-            y: otus.slice(0,10),
-            x: values.slice(0,10),
-            type: "bar",
-            orientation: 'h'
-        }];
         var traceGauge = [{
             type: "indicator",
             mode:"gauge+number",
@@ -112,7 +106,15 @@ function init() {
                 color: otus
             }
         }];
-        
+        var traceBar = [{
+            y: otus.slice(0,10).map(d => "OTU"+d.toString()),
+            x: values.slice(0,10),
+            type: "bar",
+            orientation: 'h',
+            marker:{
+                width:1
+            }
+        }];
         // Define the plot layout
         var layout = {
             // title: "The highest critically acclaimed movies.",
@@ -120,9 +122,9 @@ function init() {
             // yaxis: { title: "Metascore (Critic) Rating"}
         };
 
-        Plotly.newPlot("bar", traceBar, layout);
-        Plotly.newPlot("gauge", traceGauge, layout);
-        Plotly.newPlot("bubble", traceBubble, layout);
+        Plotly.newPlot("bar", traceBar);
+        Plotly.newPlot("gauge", traceGauge);
+        Plotly.newPlot("bubble", traceBubble);
   })
 }
 init();
