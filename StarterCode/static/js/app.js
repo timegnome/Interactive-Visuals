@@ -1,71 +1,128 @@
 function optionChanged(value){
     d3.json("samples.json").then((incomingData) => {
-        var dropdownMenu = d3.select("#selDataset");
-        // Assign the value of the dropdown menu option to a variable
-        // var subject = dropdownMenu.property("value");
-    
-        // Use filter() to pass the function as its argument
-        var filteredMovies = incomingData.filter(filterMovieRatings);
-
-        //  Check to make sure your are filtering your movies.
-        console.log(filteredMovies);
-
-        // Use the map method with the arrow function to return all the filtered movie titles.
-        var titles = filteredMovies.map(movies =>  movies.title);
+        var info = d3.select("#sample-metadata");
+        var otus =incomingData["samples"].filter(d => d.id === value)[0]['otu_ids']
 
         // Use the map method with the arrow function to return all the filtered movie metascores.
-        var ratings = filteredMovies.map(movies => movies.metascore);
+        var values =incomingData["samples"].filter(d => d.id === value)[0]['sample_values']
 
-        // Check your filtered metascores.
-        console.log(ratings);
-
-        // Create your trace.
-        var trace = {
-            x: titles,
-            y: ratings,
-            type: "bar"
-        };
-
+        var labels =incomingData["samples"].filter(d => d.id === value)[0]['otu_labels']
+        metadata = incomingData["metadata"].filter(d => d.id === parseInt(value))[0]
+        info.html('')
+        info.append('p')
+        .html(`<strong>ID: ${metadata['id']}</strong><br>
+        <strong>Ethnicity: ${metadata['ethnicity']}</strong><br>
+        <strong>Gender: ${metadata['gender']}</strong><br>
+        <strong>Age: ${metadata['age']}</strong><br>
+        <strong>Location: ${metadata['location']}</strong><br>
+        <strong>Bbtype: ${metadata['bbtype']}</strong><br>
+        <strong>Wfreq: ${metadata['wfreq']}</strong><br>`)
+        //  forEach(d => {info.append('p').text(d); console.log(d);})
+        //  Create your trace.
+        var traceBar = [{
+            type: "bar",
+            x: otus.slice(0,10),
+            y: values.slice(0,10),
+            orientation: 'h'
+        }];
+        var traceGauge = [{
+            type: "indicator",
+            mode:"gauge+number",
+            value: metadata['wfreq'],
+            gauge: {
+                axis: {range: [null, 9]}
+                // steps:[
+                //     { range: []}
+                // ]
+            }
+        }];
+        var traceBubble = [{
+            x: otus,
+            y: values,
+            text: labels,
+            mode: 'markers',
+            marker: {
+                size: values,
+                color: otus
+            }
+        }];
+        
         // Create the data array for our plot
-        var data = [trace];
-
         // Define the plot layout
         var layout = {
-            title: "The highest critically acclaimed movies.",
-            xaxis: { title: "Title" },
-            yaxis: { title: "Metascore (Critic) Rating"}
+            // title: "The highest critically acclaimed movies.",
+            // xaxis: { title: "Title" },
+            // yaxis: { title: "Metascore (Critic) Rating"}
         };
 
         // Plot the chart to a div tag with id "bar-plot"
-        Plotly.newPlot("bar", data, layout);
-        Plotly.newPlot("gauge", data, layout);
-        Plotly.newPlot("bubble", data, layout);
+        Plotly.newPlot("bar", traceBar, layout);
+        Plotly.newPlot("gauge", traceGauge, layout);
+        Plotly.newPlot("bubble", traceBubble, layout);
     });
 }
 function init() {
-    d3.json("samples.json").then((dataJ) => {
-    var dropdownMenu = d3.select("#selDataset");
-    dataJ['names'].forEach(d=> dropdownMenu.append('option').text(d))
-    // .slice
-    // var data = [{
-    //   values: us,
-    //   labels: labels,
-    //   type: "pie"
-    // }];
-  
-    // var layout = {
-    //   height: 600,
-    //   width: 800
-    // };
-    
-    // Plotly.newPlot("pie", data, layout);
-    // Plotly.newPlot("bar", data, layout);
-    //     Plotly.newPlot("gauge", data, layout);
-    //     Plotly.newPlot("bubble", data, layout);
+    d3.json("samples.json").then((incomingData) => {
+        var dropdownMenu = d3.select("#selDataset");
+        incomingData['names'].forEach(d=> dropdownMenu.append('option').text(d))
+        var info = d3.select("#sample-metadata");
+        var value = dropdownMenu.property('value')
+        var otus =incomingData["samples"].filter(d => d.id === value)[0]['otu_ids']
+
+        // Use the map method with the arrow function to return all the filtered movie metascores.
+        var values =incomingData["samples"].filter(d => d.id === value)[0]['sample_values']
+
+        var labels =incomingData["samples"].filter(d => d.id === value)[0]['otu_labels']
+        metadata = incomingData["metadata"].filter(d => d.id === parseInt(value))[0]
+        info.html('')
+        info.append('p')
+        .html(`<strong>ID: ${metadata['id']}</strong><br>
+        <strong>Ethnicity: ${metadata['ethnicity']}</strong><br>
+        <strong>Gender: ${metadata['gender']}</strong><br>
+        <strong>Age: ${metadata['age']}</strong><br>
+        <strong>Location: ${metadata['location']}</strong><br>
+        <strong>Bbtype: ${metadata['bbtype']}</strong><br>
+        <strong>Wfreq: ${metadata['wfreq']}</strong><br>`)
+        //  forEach(d => {info.append('p').text(d); console.log(d);})
+        //  Create your trace.
+        var traceBar = [{
+            y: otus.slice(0,10),
+            x: values.slice(0,10),
+            type: "bar",
+            orientation: 'h'
+        }];
+        var traceGauge = [{
+            type: "indicator",
+            mode:"gauge+number",
+            value: metadata['wfreq'],
+            gauge: {
+                axis: {range: [null, 9]}
+                // steps:[
+                //     { range: []}
+                // ]
+            }
+        }];
+        var traceBubble = [{
+            x: otus,
+            y: values,
+            text: labels,
+            mode: 'markers',
+            marker: {
+                size: values,
+                color: otus
+            }
+        }];
+        
+        // Define the plot layout
+        var layout = {
+            // title: "The highest critically acclaimed movies.",
+            // xaxis: { title: "Title" },
+            // yaxis: { title: "Metascore (Critic) Rating"}
+        };
+
+        Plotly.newPlot("bar", traceBar, layout);
+        Plotly.newPlot("gauge", traceGauge, layout);
+        Plotly.newPlot("bubble", traceBubble, layout);
   })
 }
-
-  
-  // Function called by DOM changes
-  
-  init();
+init();
